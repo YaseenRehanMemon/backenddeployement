@@ -25,7 +25,7 @@ class PDFService {
 
     const browser = await puppeteer.launch({
       headless: true,
-      executablePath: '/home/ubuntu/.cache/puppeteer/chrome/linux-141.0.7390.54/chrome-linux64/chrome',
+      executablePath: '/usr/bin/google-chrome-stable',
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     const page = await browser.newPage();
