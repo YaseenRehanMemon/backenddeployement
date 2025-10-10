@@ -1,0 +1,110 @@
+[
+  {
+    "question": "In decreasing price of a motor bike by \\( 10\\% \\) number of bikes sold is increased by \\( 10\\% \\). What is the change in overall sales?",
+    "options": {
+      "A": "Increases",
+      "B": "decreases",
+      "C": "remains same",
+      "D": "may increase or may decrease"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "The radius of circle is increased by \\( 20\\% \\) its area is increased by:",
+    "options": {
+      "A": "\\( 44\\% \\)",
+      "B": "\\( 40\\% \\)",
+      "C": "\\( 20\\% \\)",
+      "D": "no change"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "A \\( 30 \\)-ounce solution is \\( 25\\% \\) alcohol. If \\( 60 \\)-ounces of water are added to it what percent of the new solution is alcohol?",
+    "options": {
+      "A": "\\( 8\\% \\)",
+      "B": "\\( 8.33\\% \\)",
+      "C": "\\( 8.35\\% \\)",
+      "D": "\\( 8.50\\% \\)"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "\\( 80\\% \\) of the workers working in a company wear jeans. Of these \\( 20\\% \\) wear jeans that are black what percent of the workers wear jeans that are not black?",
+    "options": {
+      "A": "\\( 30\\% \\)",
+      "B": "\\( 60.00\\% \\)",
+      "C": "\\( 60.55\\% \\)",
+      "D": "\\( 64\\% \\)"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "Two trains travel in the same direction at \\( 50 \\) km/h and \\( 32 \\) km/h. A man in slower train observes that the faster train passes him in \\( 15 \\) seconds. The length of faster train is:",
+    "options": {
+      "A": "\\( 75 \\)m",
+      "B": "\\( 100 \\)m",
+      "C": "\\( 150 \\)m",
+      "D": "\\( 341.66 \\)m"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "A train \\( 110 \\) meters long passes a telegraph pole in \\( 3 \\) seconds. How long will it take to cross a platform \\( 165 \\) meters long?",
+    "options": {
+      "A": "\\( 4 \\) seconds",
+      "B": "\\( 4.5 \\) seconds",
+      "C": "\\( 7 \\) seconds",
+      "D": "\\( 10 \\) seconds"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "Two trains for Lahore leave Rawalpindi at \\( 8:30 \\) AM and \\( 9:00 \\) AM and travel at \\( 60 \\) km/h and \\( 70 \\) km/h. How many kilometers from Rawalpindi will the two trains be together.",
+    "options": {
+      "A": "\\( 100 \\)",
+      "B": "\\( 190 \\)",
+      "C": "\\( 210 \\)",
+      "D": "\\( 150 \\)"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "A train traveling at \\( 36 \\) km/h took \\( 10 \\) seconds to pass a stationary man. What was the length of the train?",
+    "options": {
+      "A": "\\( 45 \\)m",
+      "B": "\\( 80 \\)m",
+      "C": "\\( 100 \\)m",
+      "D": "\\( 110 \\)m"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "A train \\( 100 \\) meters long traveling at \\( 48 \\) km/h completely crosses a bridge in \\( 30 \\) seconds. How long is the bridge:",
+    "options": {
+      "A": "\\( 100 \\)m",
+      "B": "\\( 150 \\)m",
+      "C": "\\( 200 \\)m",
+      "D": "\\( 300 \\)m"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "If part of tank filled in one hour = \\( \\frac{1}{10} \\) then time required to fill the tank.",
+    "options": {
+      "A": "\\( 8 \\)",
+      "B": "\\( 12 \\)",
+      "C": "\\( 10 \\)",
+      "D": "\\( 15 \\)"
+    },
+    "correct_answer": null
+  },
+  {
+    "question": "An inlet pipe can fill a tank in \\( 10 \\) hrs and an outlet pipe empties the same full tank in \\( 20 \\) hrs. The time required to fill the tank when both pipes are opened.",
+    "options": {
+      "A": "\\( 10 \\)",
+      "B": "\\( 20 \\)"
+    },
+    "correct_answer": null
+  }
+]
