@@ -12,9 +12,9 @@ class PDFService {
    * @returns {Promise<Object>} Object containing paths to the generated PDF and JSON data.
    */
   async generateTestPDF(mcqs, metadata) {
-    const outputDir = '/tmp/output';
+    const outputDir = config.outputDir;
     if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir);
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
     const outputPath = path.join(outputDir, `final_test_${mcqs.length}.pdf`);
@@ -30,25 +30,30 @@ class PDFService {
       throw new Error('PDFBOLT_API_KEY environment variable is required');
     }
     
-    const response = await axios.post('https://api.pdfbolt.com/v1/direct', {
-      html: encodedHtml,
-      printBackground: true,
-      waitUntil: 'networkidle'
-    }, {
-      headers: {
-        'API-KEY': pdfboltApiKey,
-        'Content-Type': 'application/json'
-      },
-      responseType: 'arraybuffer',
-      timeout: config.pdfGenerationTimeout
-    });
+    try {
+      const response = await axios.post('https://api.pdfbolt.com/v1/direct', {
+        html: encodedHtml,
+        printBackground: true,
+        waitUntil: 'networkidle'
+      }, {
+        headers: {
+          'API-KEY': pdfboltApiKey,
+          'Content-Type': 'application/json'
+        },
+        responseType: 'arraybuffer',
+        timeout: config.pdfGenerationTimeout
+      });
 
-    fs.writeFileSync(outputPath, response.data);
+      fs.writeFileSync(outputPath, response.data);
 
-    return {
-      pdf: outputPath,
-      json: jsonPath
-    };
+      return {
+        pdf: outputPath,
+        json: jsonPath
+      };
+    } catch (error) {
+      console.error('Error in PDF generation:', error.message, error.response?.data);
+      throw new Error(`PDF generation failed: ${error.message}`);
+    }
   }
 
   processLogoPath() {

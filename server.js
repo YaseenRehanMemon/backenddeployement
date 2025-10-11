@@ -111,15 +111,25 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
 
     } catch (error) {
         console.error('❌ Error processing test:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         
         // Cleanup on error
         if (req.files) {
-            await fileService.cleanupTempFiles(req.files);
+            try {
+                await fileService.cleanupTempFiles(req.files);
+            } catch (cleanupError) {
+                console.error('Error during cleanup:', cleanupError);
+            }
         }
         
         res.status(500).json({
             error: 'Failed to process test paper',
-            details: error.message
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 });

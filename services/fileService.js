@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const sharp = require('sharp');
 const pdfParse = require('pdf-parse');
+const config = require('../config');
 
 class FileService {
     async processUploadedFiles(files) {
@@ -37,10 +38,13 @@ class FileService {
         
         for (const file of files) {
             try {
-                await fs.unlink(file.path);
-                console.log(`🗑️ Cleaned up: ${file.filename}`);
+                // Only try to clean up files that are in our configured upload directory
+                if (file.path && file.path.startsWith(config.uploadDir)) {
+                    await fs.unlink(file.path);
+                    console.log(`🗑️ Cleaned up: ${file.filename}`);
+                }
             } catch (error) {
-                console.error(`Failed to delete ${file.filename}:`, error);
+                console.error(`Failed to delete ${file.filename}:`, error.message);
             }
         }
     }
