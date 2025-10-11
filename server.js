@@ -125,13 +125,16 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
         // Step 5: Cleanup temporary files
         await fileService.cleanupTempFiles(req.files);
 
+        // Construct the base URL
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+
         // Return success response
         res.json({
             success: true,
             message: 'Test paper generated successfully',
             files: {
-                pdf: `/output/${outputPaths.pdf}`,
-                json: `/output/${outputPaths.json}`
+                pdf: `${baseUrl}/output/${outputPaths.pdf}`,
+                json: `${baseUrl}/output/${outputPaths.json}`
             },
             stats: {
                 totalQuestions: cleanedMCQs.length,
@@ -183,13 +186,16 @@ app.post('/regenerate_pdf', async (req, res) => {
         const pdfService = new PDFService();
         const outputPaths = await pdfService.generateTestPDF(mcqs, metadata);
 
+        // Construct the base URL
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+
         // Return success response
         res.json({
             success: true,
             message: 'PDF regenerated successfully',
             files: {
-                pdf: `/output/${outputPaths.pdf}`,
-                json: `/output/${outputPaths.json}`
+                pdf: `${baseUrl}/output/${outputPaths.pdf}`,
+                json: `${baseUrl}/output/${outputPaths.json}`
             },
             stats: {
                 totalQuestions: mcqs.length
