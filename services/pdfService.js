@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer-core');
+const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const katex = require('katex');
@@ -22,29 +22,21 @@ class PDFService {
     await fs.promises.writeFile(jsonPath, JSON.stringify(mcqs, null, 2));
 
     const html = this.generateHTML(mcqs, metadata);
+    const encodedHtml = Buffer.from(html).toString('base64');
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      executablePath: '/usr/bin/google-chrome-stable',
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-
-    const pdfOptions = {
-      path: outputPath,
-      format: 'A4',
+    const response = await axios.post('https://api.pdfbolt.com/v1/direct', {
+      html: encodedHtml,
       printBackground: true,
-      margin: {
-        top: '10mm',
-        bottom: '10mm',
-        left: '15mm',
-        right: '15mm'
-      }
-    };
+      waitUntil: 'networkidle'
+    }, {
+      headers: {
+        'API-KEY': '11e1cf71-b8a6-4c89-9b30-b4a7e9ad9ef4',
+        'Content-Type': 'application/json'
+      },
+      responseType: 'arraybuffer'
+    });
 
-    await page.setContent(html, { waitUntil: 'networkidle0' });
-    await page.pdf(pdfOptions);
-    await browser.close();
+    fs.writeFileSync(outputPath, response.data);
 
     return {
       pdf: outputPath,
