@@ -12,6 +12,35 @@ const fileService = require('./services/fileService');
 const config = require('./config');
 
 const app = express();
+
+// =======================================
+// In-Memory Error Logging
+// =======================================
+const errorLog = [];
+const MAX_LOG_SIZE = 100;
+
+const logError = (error, context = 'General') => {
+    const errorEntry = {
+        timestamp: new Date().toISOString(),
+        context,
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+    };
+    // Add to the beginning of the array
+    errorLog.unshift(errorEntry);
+    // Keep the log size manageable
+    if (errorLog.length > MAX_LOG_SIZE) {
+        errorLog.pop();
+    }
+    // Also log to the standard console
+    console.error(`[${errorEntry.timestamp}] [${context}]`, error);
+};
+
+// Endpoint to view errors
+app.get('/errors', (req, res) => {
+    res.status(200).json(errorLog);
+});
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -111,19 +140,14 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
         });
 
     } catch (error) {
-        console.error('❌ Error processing test:', error);
-        console.error('Error details:', {
-            message: error.message,
-            stack: error.stack,
-            name: error.name
-        });
+        logError(error, 'upload_test');
         
         // Cleanup on error
         if (req.files) {
             try {
                 await fileService.cleanupTempFiles(req.files);
             } catch (cleanupError) {
-                console.error('Error during cleanup:', cleanupError);
+                logError(cleanupError, 'upload_test_cleanup');
             }
         }
         
@@ -173,7 +197,7 @@ app.post('/regenerate_pdf', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Error regenerating PDF:', error);
+        logError(error, 'regenerate_pdf');
         res.status(500).json({
             error: 'Failed to regenerate PDF',
             details: error.message
