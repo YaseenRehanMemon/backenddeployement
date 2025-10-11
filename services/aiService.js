@@ -3,7 +3,11 @@ const fs = require('fs').promises;
 
 class AIService {
   constructor() {
-    this.genAI = new GoogleGenerativeAI('AIzaSyBaJWfsgTaXwkNy711OXHIcBNe8dV7fF_8');
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY environment variable is required');
+    }
+    this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 

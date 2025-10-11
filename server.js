@@ -9,6 +9,7 @@ const uploadMiddleware = require('./middleware/uploadMiddleware');
 const aiService = require('./services/aiService');
 const PDFService = require('./services/pdfService');
 const fileService = require('./services/fileService');
+const config = require('./config');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -88,7 +89,8 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
 
         // Step 4: Generate PDF
         console.log('📄 Generating PDF...');
-        const pdfService = new PDFService(); const outputPaths = await pdfService.generateTestPDF(cleanedMCQs, metadata);
+        const pdfService = new PDFService();
+        const outputPaths = await pdfService.generateTestPDF(cleanedMCQs, metadata);
 
         // Step 5: Cleanup temporary files
         await fileService.cleanupTempFiles(req.files);

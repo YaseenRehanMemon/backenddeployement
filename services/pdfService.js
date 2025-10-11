@@ -2,6 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const katex = require('katex');
+const config = require('../config');
 
 class PDFService {
   /**
@@ -24,16 +25,22 @@ class PDFService {
     const html = this.generateHTML(mcqs, metadata);
     const encodedHtml = Buffer.from(html).toString('base64');
 
+    const pdfboltApiKey = process.env.PDFBOLT_API_KEY;
+    if (!pdfboltApiKey) {
+      throw new Error('PDFBOLT_API_KEY environment variable is required');
+    }
+    
     const response = await axios.post('https://api.pdfbolt.com/v1/direct', {
       html: encodedHtml,
       printBackground: true,
       waitUntil: 'networkidle'
     }, {
       headers: {
-        'API-KEY': '11e1cf71-b8a6-4c89-9b30-b4a7e9ad9ef4',
+        'API-KEY': pdfboltApiKey,
         'Content-Type': 'application/json'
       },
-      responseType: 'arraybuffer'
+      responseType: 'arraybuffer',
+      timeout: config.pdfGenerationTimeout
     });
 
     fs.writeFileSync(outputPath, response.data);
@@ -46,20 +53,11 @@ class PDFService {
 
   processLogoPath() {
     const LOGO_PLACEHOLDER = "https://placehold.co/60x60/333333/FFFFFF?text=LOGO";
-    const defaultLogoPath = './assets/logo.png';
-    const logoPath = process.env.LOGO_PATH || defaultLogoPath;
-
-    if (fs.existsSync(logoPath)) {
-      return {
-        path: 'file://' + path.resolve(logoPath),
-        exists: true
-      };
-    } else {
-      return {
-        path: LOGO_PLACEHOLDER,
-        exists: false
-      };
-    }
+    // In serverless environments, only use remote images as local files may not be available
+    return {
+      path: LOGO_PLACEHOLDER,
+      exists: false
+    };
   }
 
   processLatexForHTML(text) {

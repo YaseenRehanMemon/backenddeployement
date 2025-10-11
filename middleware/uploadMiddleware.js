@@ -1,10 +1,11 @@
 const multer = require('multer');
 const path = require('path');
+const config = require('../config');
 
 // Configure storage
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '/tmp/uploads');
+        cb(null, config.uploadDir);
     },
     filename: (req, file, cb) => {
         const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${path.extname(file.originalname)}`;
@@ -28,7 +29,10 @@ const fileFilter = (req, file, cb) => {
 // Create multer instance
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    limits: { 
+        fileSize: config.maxFileSize,
+        files: config.maxFiles
+    },
     fileFilter: fileFilter
 });
 
