@@ -7,7 +7,7 @@ class AIService {
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY environment variable is required');
     }
-    this.genAI = new GoogleGenerativeAI(apiKey);
+    this.genAI = new GoogleGenerativeAI('AIzaSyCXgyhhuF5oK2PhNkD1jmvgyOzdPO0roKE');
     this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 
