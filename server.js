@@ -40,6 +40,7 @@ const ensureDirectories = async () => {
     await fs.ensureDir(config.uploadDir);
     await fs.ensureDir(config.outputDir);
 };
+ensureDirectories();
 
 // ========================================
 // MAIN ENDPOINT: Upload and Process Test
@@ -195,8 +196,7 @@ if (process.env.VERCEL_ENV) {
     module.exports = app;
 } else {
     // Running locally
-    app.listen(PORT, async () => {
-        await ensureDirectories();
+    app.listen(PORT, () => {
         console.log(`🚀 Server running on port ${PORT}`);
         console.log('📚 Govt. Degree College Hingorja - AI Test System Ready');
     });
