@@ -47,8 +47,8 @@ class PDFService {
       fs.writeFileSync(outputPath, response.data);
 
       return {
-        pdf: outputPath,
-        json: jsonPath
+        pdf: path.basename(outputPath),
+        json: path.basename(jsonPath)
       };
     } catch (error) {
       console.error('Error in PDF generation:', error.message, error.response?.data);

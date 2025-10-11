@@ -130,8 +130,8 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
             success: true,
             message: 'Test paper generated successfully',
             files: {
-                pdf: outputPaths.pdf,
-                json: outputPaths.json
+                pdf: `/output/${outputPaths.pdf}`,
+                json: `/output/${outputPaths.json}`
             },
             stats: {
                 totalQuestions: cleanedMCQs.length,
@@ -188,8 +188,8 @@ app.post('/regenerate_pdf', async (req, res) => {
             success: true,
             message: 'PDF regenerated successfully',
             files: {
-                pdf: outputPaths.pdf,
-                json: outputPaths.json
+                pdf: `/output/${outputPaths.pdf}`,
+                json: `/output/${outputPaths.json}`
             },
             stats: {
                 totalQuestions: mcqs.length
