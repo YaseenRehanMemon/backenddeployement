@@ -394,26 +394,22 @@ class PDFService {
                 <tr>
                     <td class="label">Date:</td>
                     <td class="value"><span class="blank-field"></span></td>
-                    <td class="label">Time:</td>
-                    <td class="value"><span class="blank-field"></span></td>
                 </tr>
                 <tr>
                     <td class="label">Instructor:</td>
                     <td class="value">${metadata.instructor}</td>
-                    <td class="label">Duration:</td>
-                    <td class="value">${metadata.time}</td>
                 </tr>
                 <tr>
                     <td class="label">Max Marks:</td>
                     <td class="value">${metadata.maxMarks}</td>
+                </tr>
+                <tr>
                     <td class="label">Min Marks:</td>
                     <td class="value">${metadata.minMarks}</td>
                 </tr>
                 <tr>
                     <td class="label">Class:</td>
                     <td class="value">${metadata.class}</td>
-                    <td class="label"></td>
-                    <td class="value"></td>
                 </tr>
             </table>
         </div>
