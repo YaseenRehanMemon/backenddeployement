@@ -179,12 +179,6 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Ensure required directories exist
-const ensureDirectories = async () => {
-    await fs.ensureDir(config.uploadDir);
-    await fs.ensureDir(config.outputDir);
-};
-
 // For Vercel serverless functions, export the app
 if (process.env.VERCEL_ENV) {
     // In Vercel environment
