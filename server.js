@@ -15,9 +15,17 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 const corsOptions = {
-  origin: ['https://hingorjatest.vercel.app', 'http://localhost:3000'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow all origins for now to fix the immediate issue
+    return callback(null, true);
+  },
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 app.use(cors(corsOptions));
 app.use(express.json());

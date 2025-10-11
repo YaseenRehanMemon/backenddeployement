@@ -1,10 +1,11 @@
+require('dotenv').config();
 const PDFService = require('./services/pdfService');
 const fs = require('fs');
 
 async function testGeneratePDF() {
   try {
     console.log('Loading extracted data...');
-    const data = JSON.parse(fs.readFileSync('./output/extracted_data_11.json', 'utf8'));
+    const data = JSON.parse(fs.readFileSync('./output/extracted_data_36.json', 'utf8'));
 
     const metadata = {
       instructor: 'Test Instructor',
