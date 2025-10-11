@@ -3,7 +3,7 @@ const fs = require('fs').promises;
 
 class AIService {
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    this.genAI = new GoogleGenerativeAI('AIzaSyBaJWfsgTaXwkNy711OXHIcBNe8dV7fF_8');
     this.model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   }
 
