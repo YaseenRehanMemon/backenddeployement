@@ -33,12 +33,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from output directory
-app.use('/output', express.static(path.join('/tmp', 'output')));
+app.use('/output', express.static(path.join(config.outputDir)));
 
 // Ensure required directories exist
 const ensureDirectories = async () => {
-    await fs.ensureDir('/tmp/uploads');
-    await fs.ensureDir('/tmp/output');
+    await fs.ensureDir(config.uploadDir);
+    await fs.ensureDir(config.outputDir);
 };
 
 // ========================================
@@ -179,9 +179,21 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Start server
-app.listen(PORT, async () => {
-    await ensureDirectories();
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log('📚 Govt. Degree College Hingorja - AI Test System Ready');
-});
+// Ensure required directories exist
+const ensureDirectories = async () => {
+    await fs.ensureDir(config.uploadDir);
+    await fs.ensureDir(config.outputDir);
+};
+
+// For Vercel serverless functions, export the app
+if (process.env.VERCEL_ENV) {
+    // In Vercel environment
+    module.exports = app;
+} else {
+    // Running locally
+    app.listen(PORT, async () => {
+        await ensureDirectories();
+        console.log(`🚀 Server running on port ${PORT}`);
+        console.log('📚 Govt. Degree College Hingorja - AI Test System Ready');
+    });
+}
