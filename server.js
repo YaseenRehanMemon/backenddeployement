@@ -32,13 +32,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from output directory
-app.use('/output', express.static(path.join(__dirname, 'output')));
+app.use('/output', express.static(path.join('/tmp', 'output')));
 
 // Ensure required directories exist
 const ensureDirectories = async () => {
-    await fs.ensureDir('./uploads');
-    await fs.ensureDir('./output');
-    await fs.ensureDir('./assets');
+    await fs.ensureDir('/tmp/uploads');
+    await fs.ensureDir('/tmp/output');
 };
 
 // ========================================

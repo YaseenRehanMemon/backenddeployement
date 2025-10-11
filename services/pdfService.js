@@ -11,7 +11,7 @@ class PDFService {
    * @returns {Promise<Object>} Object containing paths to the generated PDF and JSON data.
    */
   async generateTestPDF(mcqs, metadata) {
-    const outputDir = './output';
+    const outputDir = '/tmp/output';
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir);
     }
