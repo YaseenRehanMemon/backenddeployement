@@ -117,9 +117,10 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
     console.log('🔧 Cleaning LaTeX...');
     const cleanedMCQs = await aiService.cleanupLatex(allMCQs);
 
-    // Step 4: Save JSON data
-    const jsonPath = path.join(config.outputDir, `extracted_data_${Date.now()}.json`);
-    await fs.promises.writeFile(jsonPath, JSON.stringify(cleanedMCQs, null, 2));
+    // Step 4: Generate PDF
+    console.log('📄 Generating PDF...');
+    // const pdfService = new PDFService();
+    // const outputPaths = await pdfService.generateTestPDF(cleanedMCQs, metadata);
 
     // Step 5: Cleanup temporary files
     await fileService.cleanupTempFiles(req.files);
@@ -130,10 +131,10 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
     // Return success response
     res.json({
       success: true,
-      message: 'Test paper processed successfully',
+      message: 'Test paper generated successfully',
       files: {
         pdf: null,
-        json: `${baseUrl}/output/${path.basename(jsonPath)}`
+        json: `${baseUrl}/output/${outputPaths.json}`
       },
       stats: {
         totalQuestions: cleanedMCQs.length,
