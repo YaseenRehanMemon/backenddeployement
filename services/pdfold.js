@@ -53,22 +53,12 @@ class PDFService {
   }
 
   processLogoPath() {
-    const LOGO_PLACEHOLDER = "https://placehold.co/60x60/333333/FFFFFF?text=LOGO";
-    const defaultLogoPath = './assets/logo.png';
-    const logoPath = process.env.LOGO_PATH || defaultLogoPath;
-
-    // Check if logo file exists
-    if (fs.existsSync(logoPath)) {
-      return {
-        path: path.resolve(logoPath), // Use absolute path for puppeteer
-        exists: true
-      };
-    } else {
-      return {
-        path: LOGO_PLACEHOLDER,
-        exists: false
-      };
-    }
+    const LOGO_URL = "https://i.ibb.co/chR3Nx6X/test.jpg";
+    // Use the provided logo URL
+    return {
+      path: LOGO_URL,
+      exists: true
+    };
   }
 
   // Render LaTeX to HTML using KaTeX
@@ -184,11 +174,14 @@ class PDFService {
             text-align: left;
         }
         .college-name {
-            font-size: 20px; /* Smaller for space */
+            font-size: 22px;
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 2px;
             line-height: 1.1;
+            color: #1a365d;
+            font-family: 'Arial Black', Arial, sans-serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
             margin: 0;
         }
         .test-subject-line {
@@ -308,7 +301,7 @@ class PDFService {
                 <div class="main-title-area">
                     ${hasLogo ? `<img src="${logoPath}" class="header-logo" alt="College Logo">` : ''}
                     <div class="header-text-container">
-                        <div class="college-name">GOVT. DEGREE COLLEGE HINGORJA</div>
+                         <div class="college-name">SCIENCE EDUCATION ACADEMY HINGORJA</div>
                         <div class="test-subject-line">
                             Test Paper - Subject: <span class="subject-underline">${metadata.subject}</span> (${metadata.class})
                         </div>

@@ -86,7 +86,8 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
       time: req.body.time || '10:00 AM - 11:30 AM',
       class: req.body.class || 'XI',
       maxMarks: req.body.maxMarks || '50',
-      minMarks: req.body.minMarks || '25'
+      minMarks: req.body.minMarks || '25',
+      pageCount: req.body.pageCount || 2
     };
 
     console.log('📋 Metadata:', metadata);
@@ -101,15 +102,20 @@ app.post('/upload_test', uploadMiddleware.array('files', 10), async (req, res) =
     // Step 1: Process all uploaded files
     const processedFiles = await fileService.processUploadedFiles(req.files);
 
-    // Step 2: Extract MCQs from each page using AI
+    // Step 2: Extract MCQs from each page using AI (batched parallel, max 2 concurrent)
     console.log('🧠 Extracting MCQs with Gemini...');
-    let allMCQs = [];
-
-    for (const [index, fileData] of processedFiles.entries()) {
-      console.log(`  Processing page ${index + 1}/${processedFiles.length}`);
-      const mcqs = await aiService.extractMCQsFromImage(fileData);
-      allMCQs = allMCQs.concat(mcqs);
+    const chunkSize = 2; // Limit to 2 concurrent requests
+    const mcqArrays = [];
+    for (let i = 0; i < processedFiles.length; i += chunkSize) {
+      const chunk = processedFiles.slice(i, i + chunkSize);
+      console.log(`  Processing batch ${Math.floor(i / chunkSize) + 1}: pages ${i + 1}-${Math.min(i + chunkSize, processedFiles.length)}`);
+      const promises = chunk.map((fileData, idx) =>
+        aiService.extractMCQsFromImage(fileData)
+      );
+      const chunkResults = await Promise.all(promises);
+      mcqArrays.push(...chunkResults);
     }
+    const allMCQs = mcqArrays.flat();
 
     console.log(`✅ Extracted ${allMCQs.length} total MCQs`);
 
@@ -184,7 +190,7 @@ app.post('/regenerate_pdf', async (req, res) => {
 
     // Generate PDF
     const pdfService = new PDFService();
-    const outputPaths = await pdfService.generateTestPDF(mcqs, metadata);
+    const outputPaths = await pdfService.generateTestPDF(mcqs, metadata, metadata.pageCount);
 
     // Construct the base URL
     const baseUrl = `${req.protocol}://${req.get('host')}`;

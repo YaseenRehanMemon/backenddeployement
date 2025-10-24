@@ -9,9 +9,10 @@ class PDFService {
    * Generates a test paper PDF from MCQs and metadata.
    * @param {Array<Object>} mcqs - Array of MCQ objects.
    * @param {Object} metadata - Test metadata (instructor, subject, class, etc.).
+   * @param {number} pageCount - Number of pages to generate.
    * @returns {Promise<Object>} Object containing paths to the generated PDF and JSON data.
    */
-  async generateTestPDF(mcqs, metadata) {
+  async generateTestPDF(mcqs, metadata, pageCount = 2) {
     const outputDir = config.outputDir;
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
@@ -22,7 +23,7 @@ class PDFService {
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(mcqs, null, 2));
 
-    const html = this.generateHTML(mcqs, metadata);
+    const html = this.generateHTML(mcqs, metadata, pageCount);
     const encodedHtml = Buffer.from(html).toString('base64');
 
     const pdfboltApiKey = process.env.PDFBOLT_API_KEY;
@@ -57,11 +58,11 @@ class PDFService {
   }
 
   processLogoPath() {
-    const LOGO_PLACEHOLDER = "https://placehold.co/60x60/333333/FFFFFF?text=LOGO";
-    // In serverless environments, only use remote images as local files may not be available
+    const LOGO_URL = "https://i.ibb.co/chR3Nx6X/test.jpg";
+    // Use the provided logo URL
     return {
-      path: LOGO_PLACEHOLDER,
-      exists: false
+      path: LOGO_URL,
+      exists: true
     };
   }
 
@@ -104,8 +105,8 @@ class PDFService {
     }
   }
 
-  // Calculate dynamic scaling based on total MCQ count
-  calculateDynamicScaling(mcqs) {
+  // Calculate dynamic scaling based on total MCQ count and page count
+  calculateDynamicScaling(mcqs, pageCount) {
     const totalMcqs = mcqs.length;
 
     // Calculate average content length
@@ -119,41 +120,47 @@ class PDFService {
 
     const avgCharsPerMcq = totalChars / totalMcqs;
 
-    // Determine layout mode based on content density
+    // Determine layout mode based on content density and page count
     let layoutMode, fontSize, lineHeight, spacing, optionsLayout;
 
-    if (totalMcqs <= 15) {
+    // Adjust density based on page count - more pages allow larger fonts
+    const densityFactor = Math.max(0.5, 1 - (pageCount - 2) * 0.1); // Reduce density as pages increase
+
+    if (totalMcqs <= 15 * pageCount) {
       // SPARSE MODE: Spread out, larger fonts
       layoutMode = 'sparse';
-      fontSize = 15;
+      fontSize = Math.min(15, 13 + (pageCount - 2) * 0.5);
       lineHeight = 1.6;
-      spacing = 12;
+      spacing = Math.max(8, 12 * densityFactor);
       optionsLayout = 'vertical'; // 2 columns
-    } else if (totalMcqs <= 30) {
+    } else if (totalMcqs <= 30 * pageCount) {
       // NORMAL MODE: Standard layout
       layoutMode = 'normal';
-      fontSize = 13.5;
+      fontSize = Math.min(13.5, 12 + (pageCount - 2) * 0.5);
       lineHeight = 1.4;
-      spacing = 8;
+      spacing = Math.max(5, 8 * densityFactor);
       optionsLayout = 'vertical'; // 2 columns
-    } else if (totalMcqs <= 50) {
+    } else if (totalMcqs <= 50 * pageCount) {
       // COMPACT MODE: Tighter spacing
       layoutMode = 'compact';
-      fontSize = 12;
+      fontSize = Math.min(12, 11 + (pageCount - 2) * 0.5);
       lineHeight = 1.2;
-      spacing = 5;
+      spacing = Math.max(3, 5 * densityFactor);
       optionsLayout = avgCharsPerMcq > 50 ? 'vertical' : 'horizontal';
     } else {
       // ULTRA-COMPACT MODE: Maximum density
       layoutMode = 'ultra-compact';
-      fontSize = 10.5;
+      fontSize = Math.min(10.5, 10 + (pageCount - 2) * 0.5);
       lineHeight = 1.1;
-      spacing = 3;
+      spacing = Math.max(2, 3 * densityFactor);
       optionsLayout = 'horizontal'; // All in one line
     }
 
-    // Calculate page break point (aim for 50-50 split)
-    const breakIndex = Math.floor(totalMcqs / 2) - 1;
+    // Calculate page break points for multiple pages
+    const breakIndices = [];
+    for (let i = 1; i < pageCount; i++) {
+      breakIndices.push(Math.floor((totalMcqs * i) / pageCount) - 1);
+    }
 
     return {
       layoutMode,
@@ -161,14 +168,15 @@ class PDFService {
       lineHeight,
       spacing,
       optionsLayout,
-      breakIndex,
-      totalMcqs
+      breakIndices,
+      totalMcqs,
+      pageCount
     };
   }
 
-  generateHTML(mcqs, metadata) {
+  generateHTML(mcqs, metadata, pageCount = 2) {
     const { path: logoPath, exists: hasLogo } = this.processLogoPath();
-    const scaling = this.calculateDynamicScaling(mcqs);
+    const scaling = this.calculateDynamicScaling(mcqs, pageCount);
 
     let html = `
 <!DOCTYPE html>
@@ -229,11 +237,14 @@ class PDFService {
         }
         
         .college-name {
-            font-size: ${Math.min(20, scaling.fontSize + 6)}px;
+            font-size: ${Math.min(22, scaling.fontSize + 8)}px;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            line-height: 1.2;
+            letter-spacing: 2px;
+            line-height: 1.1;
+            color: #1a365d;
+            font-family: 'Arial Black', Arial, sans-serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
         
         .test-subject-line {
@@ -382,7 +393,7 @@ class PDFService {
         <div class="main-title-area">
             ${hasLogo ? `<img src="${logoPath}" class="header-logo" alt="Logo">` : ''}
             <div class="header-text-container">
-                <div class="college-name">GOVT. DEGREE COLLEGE HINGORJA</div>
+                <div class="college-name">SCIENCE EDUCATION ACADEMY HINGORJA</div>
                 <div class="test-subject-line">
                     Test Paper - Subject: <span class="subject-underline">${metadata.subject}</span> (${metadata.class})
                 </div>
@@ -424,32 +435,16 @@ class PDFService {
         </div>
     </div>`;
 
-    // QUESTIONS - First Page
-    for (let i = 0; i <= scaling.breakIndex && i < mcqs.length; i++) {
+    // QUESTIONS - Distribute across pages
+    let currentPage = 0;
+    for (let i = 0; i < mcqs.length; i++) {
       const mcq = mcqs[i];
       const cleanedQuestion = mcq.question.replace(/^\s*\d+\.?\s*/, '');
 
-      html += `
-    <div class="question${i === scaling.breakIndex ? ' page-break' : ''}">
-        <div class="question-text">${i + 1}. ${this.processLatexForHTML(cleanedQuestion)}</div>
-        <div class="options">`;
-
-      ['A', 'B', 'C', 'D'].forEach(key => {
-        if (mcq.options[key]) {
-          html += `<div class="option">${key}) ${this.processLatexForHTML(mcq.options[key])}</div>`;
-        }
-      });
-
-      html += `</div></div>`;
-    }
-
-    // QUESTIONS - Second Page
-    for (let i = scaling.breakIndex + 1; i < mcqs.length; i++) {
-      const mcq = mcqs[i];
-      const cleanedQuestion = mcq.question.replace(/^\s*\d+\.?\s*/, '');
+      const isPageBreak = scaling.breakIndices.includes(i);
 
       html += `
-    <div class="question">
+    <div class="question${isPageBreak ? ' page-break' : ''}">
         <div class="question-text">${i + 1}. ${this.processLatexForHTML(cleanedQuestion)}</div>
         <div class="options">`;
 
